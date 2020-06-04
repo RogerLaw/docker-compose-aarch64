@@ -1,7 +1,7 @@
 # Dockerfile to build docker-compose for aarch64
-# FROM arm64v8/python:3.6.5-stretch
+FROM arm64v8/python:3.6-stretch
 # FROM arm64v8/python:3.8.3-buster # /libpython3.8.so.1.0 not found
-FROM arm64v8/python:3.6-buster
+# FROM arm64v8/python:3.6-buster   # buster use GLIBC_2.28, not available on RPI 18.04.4 bionic
 
 # Add env
 ENV LANG C.UTF-8
