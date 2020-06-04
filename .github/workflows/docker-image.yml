@@ -18,10 +18,10 @@ jobs:
       run: docker build . --file Dockerfile --tag docker-compose-aarch64-builder
     - name: Generate a docker-compose-Linux-aarch64
       run: |
-        mkdir -p /release
-        docker run --rm -v /release:/dist docker-compose-aarch64-builder
+        mkdir -p ./release
+        docker run --rm -v ./release:/dist docker-compose-aarch64-builder
     - name: Upload Artifact
       uses: actions/upload-artifact@master
       with:
         name: docker-compose-Linux-aarch64
-        path: /release
+        path: ./release
