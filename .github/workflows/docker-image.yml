@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag docker-compose-aarch64-builder
+    - name: Generate a docker-compose-Linux-aarch64
+      run: mkdir -p /release
+      run: docker run --rm -v /release:/dist docker-compose-aarch64-builder
