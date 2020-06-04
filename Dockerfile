@@ -1,5 +1,7 @@
 # Dockerfile to build docker-compose for aarch64
-FROM arm64v8/python:3.6.5-stretch
+# FROM arm64v8/python:3.6.5-stretch
+# FROM arm64v8/python:3.8.3-buster # /libpython3.8.so.1.0 not found
+FROM arm64v8/python:3.6-buster
 
 # Add env
 ENV LANG C.UTF-8
@@ -9,12 +11,12 @@ COPY ./vendor/qemu-bin /usr/bin/
 RUN [ "cross-build-start" ]
 
 # Set the versions
-ENV DOCKER_COMPOSE_VER 1.22.0
+ENV DOCKER_COMPOSE_VER 1.25.5
 # docker-compose requires pyinstaller 3.3.1 (check github.com/docker/compose/requirements-build.txt)
 # If this changes, you may need to modify the version of "six" below
-ENV PYINSTALLER_VER 3.3.1
+ENV PYINSTALLER_VER 3.6
 # "six" is needed for PyInstaller. v1.11.0 is the latest as of PyInstaller 3.3.1
-ENV SIX_VER 1.11.0
+ENV SIX_VER 1.12.0
 
 # Install dependencies
 # RUN apt-get update && apt-get install -y
@@ -33,9 +35,12 @@ RUN git clone https://github.com/docker/compose.git . \
     && git checkout $DOCKER_COMPOSE_VER
 
 # Run the build steps (taken from github.com/docker/compose/script/build/linux-entrypoint)
+# ENV PY_MIRROR "-i https://pypi.tuna.tsinghua.edu.cn/simple"
+ENV PY_MIRROR ""
 RUN mkdir ./dist \
-    && pip install -q -r requirements.txt -r requirements-build.txt \
-    && ./script/build/write-git-sha \
+    && pip install $PY_MIRROR -r requirements.txt -r requirements-build.txt
+
+RUN ./script/build/write-git-sha > compose/GITSHA \
     && pyinstaller docker-compose.spec \
     && mv dist/docker-compose ./docker-compose-$(uname -s)-$(uname -m)
 
@@ -46,3 +51,4 @@ RUN mkdir ./dist \
 # Copy out the generated binary
 VOLUME /dist
 CMD cp docker-compose-* /dist
+
